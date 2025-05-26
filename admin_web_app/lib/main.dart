@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart'; // Added
+import 'package:admin_web_app/app_localizations.dart'; // Assuming this path after generation
 import 'screens/login_screen_web.dart';
 import 'screens/dashboard_screen_web.dart';
 import 'services/google_auth_service_web.dart';
@@ -27,7 +29,20 @@ class AdminWebApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        title: 'Admin Area - Field Engineer App',
+        title: 'Admin Area - Field Engineer App', // This could also be localized if needed via a bootstrap
+        // Localization settings
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('en', ''), // English, no country code
+          Locale('pt', 'BR'), // Brazilian Portuguese
+        ],
+        locale: const Locale('pt', 'BR'), // Force Brazilian Portuguese
+
         theme: ThemeData(
           primarySwatch: Colors.blueGrey,
           visualDensity: VisualDensity.adaptivePlatformDensity,

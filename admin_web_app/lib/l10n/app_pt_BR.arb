@@ -1,0 +1,19 @@
+{
+  "@@locale": "pt_BR",
+  "adminLoginTitle": "Login Admin - App de Comissionamento",
+  "adminLoginButtonGoogle": "Login com Google",
+  "adminDashboardTitle": "Dashboard Admin - Projetos no Drive",
+  "adminDashboardLogout": "Sair",
+  "adminDashboardProjectName": "Nome do Projeto",
+  "adminDashboardLastModified": "Última Modificação (Drive)",
+  "adminDashboardReportLink": "Relatório",
+  "adminDashboardPhotoCount": "Contagem de Fotos",
+  "adminDashboardEmptyState": "Nenhum projeto encontrado na pasta 'AplicativoDeComissionamento' no Google Drive.",
+  "adminDashboardErrorLoading": "Erro ao carregar projetos: {errorMessage}",
+  "adminDashboardTryAgainButton": "Tentar Novamente",
+  "adminDashboardOpenReportButton": "Abrir Relatório",
+  "commonError": "Erro",
+  "commonSuccess": "Sucesso",
+  "commonOk": "OK",
+  "commonCancel": "Cancelar"
+}

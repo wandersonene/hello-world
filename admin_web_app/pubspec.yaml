@@ -11,6 +11,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations: # Added for i18n
+    sdk: flutter         # Added for i18n
   
   # For UI and general utilities
   cupertino_icons: ^1.0.2
@@ -30,9 +32,11 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+  # intl_utils: ^2.8.6 # Not strictly required for manual .arb, but useful for generation from code
 
 flutter:
   uses-material-design: true
+  generate: true # Enabled for i18n code generation
 
   # To add assets to your application, add an assets section, like this:
   # assets:

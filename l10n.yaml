@@ -1,0 +1,6 @@
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+# output-class: AppLocalizations # Default is AppLocalizations, so this is optional
+# preferred-supported-locales: [ en, pt_BR ] # Can be useful, but supportedLocales in MaterialApp is the source of truth
+nullable-getter: false # Recommended for new projects to avoid null issues with translations.

@@ -67,6 +67,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  generate: true # Ensure this is true for intl code generation
 
   assets:
     - assets/fonts/

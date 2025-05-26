@@ -1,0 +1,121 @@
+{
+  "@@locale": "en",
+  "commonOk": "OK",
+  "@commonOk": {
+    "description": "Standard OK button label"
+  },
+  "commonCancel": "Cancel",
+  "commonSave": "Save",
+  "commonDelete": "Delete",
+  "commonConfirmDeletion": "Confirm Deletion",
+  "commonAreYouSureDelete": "Are you sure you want to delete {itemName}?",
+  "@commonAreYouSureDelete": {
+    "description": "Confirmation message for deletion with a placeholder for the item name.",
+    "placeholders": {
+      "itemName": {
+        "type": "String",
+        "example": "My Project"
+      }
+    }
+  },
+  "commonYesDelete": "Yes, Delete",
+  "commonNo": "No",
+  "commonError": "Error",
+  "commonSuccess": "Success",
+  "commonFieldRequired": "Field required",
+
+  "loginTitle": "Login",
+  "loginEmailOrCpfLabel": "CPF/E-mail",
+  "loginPasswordLabel": "Password",
+  "loginButton": "Login",
+  "loginNoAccount": "Don't have an account? Register",
+  "loginErrorInvalidPassword": "Invalid password. Please try again.",
+  "loginErrorUserNotFound": "User not found.",
+  "loginErrorGeneric": "Login failed. Please try again.",
+
+  "registerTitle": "Register",
+  "registerFullNameLabel": "Full Name",
+  "registerEmailOrCpfLabel": "CPF/E-mail",
+  "registerPasswordLabel": "Password",
+  "registerConfirmPasswordLabel": "Confirm Password",
+  "registerButton": "Register",
+  "registerSuccessMessage": "Registration successful! Welcome {userName}.",
+  "@registerSuccessMessage": {
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "registerErrorPasswordMismatch": "Passwords do not match.",
+  "registerErrorEmailExists": "CPF/E-mail already registered.",
+
+  "projectListTitle": "Projects - {userName}",
+  "@projectListTitle": {
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "projectListEmptyState": "No projects found. Click '+' to add.",
+  "projectDetailsAddTitle": "Add New Project",
+  "projectDetailsEditTitle": "Edit Project",
+  "projectDetailsProjectTitleLabel": "Project Title",
+  "projectDetailsClientLabel": "Client",
+  "projectDetailsSaveButton": "Save Project Changes",
+  "projectDetailsProjectAddedSuccess": "Project added successfully!",
+  "projectDetailsProjectUpdatedSuccess": "Project updated successfully!",
+  "projectDetailsInspectionModulesTitle": "Inspection Modules",
+  "projectDetailsAddModuleButton": "Add Inspection Module",
+
+  "inspectionTitle": "Inspection",
+  "inspectionItemHeader": "Item {order}",
+  "@inspectionItemHeader": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+  "inspectionCompleteButton": "Complete Inspection",
+  "inspectionPhotosTitle": "Item Photos",
+  "inspectionAddPhotoButton": "Add Photo",
+  "inspectionCameraOption": "Camera",
+  "inspectionGalleryOption": "Gallery",
+
+  "settingsTitle": "Settings",
+  "settingsGoogleAccountTitle": "Google Account",
+  "settingsSignInGoogleButton": "Sign In with Google",
+  "settingsSignOutGoogleButton": "Sign Out",
+  "settingsSignedInAs": "Signed in as {email}",
+  "@settingsSignedInAs": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsNotSignedIn": "Not signed in",
+
+  "syncStatusInProgress": "In Progress",
+  "syncStatusSuccess": "Success",
+  "syncStatusError": "Error",
+  "syncOpUploadingPdf": "Uploading PDF: {fileName}",
+  "@syncOpUploadingPdf": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "syncOpSyncSuccessful": "Sync successful!",
+  "syncOpSyncFailed": "Sync failed: {error}",
+  "@syncOpSyncFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
+}
