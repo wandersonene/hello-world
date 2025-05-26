@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect confesses path.
+  -->
+  <base href="/">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="Admin Area for Field Engineer App.">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Admin Web App">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>Admin Web App</title>
+  <link rel="manifest" href="manifest.json">
+
+  <script>
+    // The value below is injected by flutter build, do not touch.
+    var serviceWorkerVersion = null;
+  </script>
+  <!-- This script installs service_worker.js to provide PWA functionality to
+       application. For more information, see:
+       https://developers.google.com/web/fundamentals/primers/service-workers -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('flutter-first-frame', function () {
+        navigator.serviceWorker.register('flutter_service_worker.js?v=' + serviceWorkerVersion);
+      });
+    }
+  </script>
+  
+  <!-- Add Google Platform Library for Sign In (needed for some web configurations) -->
+  <!-- <script src="https://apis.google.com/js/platform.js" async defer></script> -->
+  <!-- If you are using google_sign_in_web, this might not be strictly necessary as it handles it -->
+  <!-- <meta name="google-signin-client_id" content="YOUR_WEB_CLIENT_ID.apps.googleusercontent.com"> -->
+
+  <meta http-equiv="Content-Security-Policy" 
+        content="
+        default-src 'self'; 
+        script-src 'self' 
+                   'wasm-unsafe-eval'  // Needed for Flutter Web in CanvasKit mode (default for desktop web)
+                   https://apis.google.com 
+                   https://*.gstatic.com;
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; // Flutter might use inline styles
+        img-src 'self' data: https://*.googleusercontent.com https://*.gstatic.com; // For user profile pics, Google icons
+        font-src 'self' https://fonts.gstatic.com;
+        connect-src 'self' 
+                      https://accounts.google.com 
+                      https://*.googleapis.com 
+                      https://*.gstatic.com 
+                      https://www.google-analytics.com;
+        frame-src 'self' https://accounts.google.com; // For Google Sign-In iframe
+        object-src 'none';
+        base-uri 'self';
+        form-action 'self' https://accounts.google.com;
+        frame-ancestors 'none';
+        block-all-mixed-content;
+        upgrade-insecure-requests;
+        ">
+</head>
+<body>
+  <script src="main.dart.js" type="application/javascript"></script>
+</body>
+</html>

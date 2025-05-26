@@ -82,4 +82,65 @@ class ProjectProvider with ChangeNotifier {
       return null; // Not found
     }
   }
+
+  // --- Norma Management for a specific project ---
+  // Note: For a more complex app, a dedicated NormaProvider might be better.
+  // For simplicity, adding to ProjectProvider as it's project-specific.
+
+  List<Norma> _currentProjectNormas = [];
+  List<Norma> get currentProjectNormas => _currentProjectNormas;
+  bool _isLoadingNormas = false;
+  bool get isLoadingNormas => _isLoadingNormas;
+  String? _normaErrorMessage;
+  String? get normaErrorMessage => _normaErrorMessage;
+
+  Future<void> loadNormasForProject(int projectId) async {
+    _isLoadingNormas = true;
+    _normaErrorMessage = null;
+    notifyListeners();
+    try {
+      _currentProjectNormas = await _databaseService.getNormasForProject(projectId);
+    } catch (e) {
+      _normaErrorMessage = "Error loading normas: ${e.toString()}";
+      _currentProjectNormas = []; // Ensure it's empty on error
+    } finally {
+      _isLoadingNormas = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> addNormaToProject(int projectId, String normaId, String normaDescription) async {
+    _normaErrorMessage = null;
+    // No need to set isLoadingNormas to true here, as it's a quick operation
+    // and the UI update will be handled by loadNormasForProject.
+    try {
+      // Add/get the norma itself to ensure it exists in the 'normas' table
+      await _databaseService.addOrGetNorma(normaId, normaDescription);
+      // Link it to the project
+      await _databaseService.linkNormaToProject(projectId, normaId);
+      await loadNormasForProject(projectId); // Refresh the list
+    } catch (e) {
+      _normaErrorMessage = "Error adding norma: ${e.toString()}";
+      notifyListeners(); // Notify if error occurred
+    }
+  }
+
+  Future<void> removeNormaFromProject(int projectId, String normaId) async {
+    _normaErrorMessage = null;
+    try {
+      await _databaseService.removeNormaFromProject(projectId, normaId);
+      await loadNormasForProject(projectId); // Refresh the list
+    } catch (e) {
+      _normaErrorMessage = "Error removing norma: ${e.toString()}";
+      notifyListeners(); // Notify if error occurred
+    }
+  }
+
+  // Call this when a project is no longer being viewed to clear its norms
+  void clearCurrentProjectNormas() {
+    _currentProjectNormas = [];
+    _normaErrorMessage = null;
+    // Optionally notify listeners if UI should react to this clearing immediately
+    // For now, assume it's part of a screen disposal or project change logic
+  }
 }

@@ -1,0 +1,40 @@
+name: admin_web_app
+description: Web administrative area for Field Engineer App.
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # For UI and general utilities
+  cupertino_icons: ^1.0.2
+  provider: ^6.1.1
+  equatable: ^2.0.5
+  intl: ^0.18.1 # For date formatting, 0.19.0 has Flutter 3.19 constraint
+
+  # Google Sign-In and Drive API
+  google_sign_in: ^6.2.1 
+  # For web, google_sign_in_web is brought in automatically by google_sign_in
+  # google_sign_in_web: # No need to specify explicitly usually
+  googleapis: ^13.1.0 # Includes drive v3
+  googleapis_auth: ^1.5.1 # For creating AuthClient if needed, though google_sign_in handles it.
+  http: ^1.1.0 # googleapis uses this, good to align versions if needed
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  # assets:
+  #   - images/a_dot_burr.jpeg
+  #   - images/a_dot_ham.jpeg

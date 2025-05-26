@@ -41,6 +41,25 @@ dependencies:
   # Digital Signature
   signature: ^5.4.1 # Check for latest for touch-based signatures
 
+  # WebView
+  flutter_inappwebview: ^5.8.0 # Check for latest, using 5.x as 6.x has breaking changes
+
+  # Email and Sharing
+  flutter_email_sender: ^6.0.3 # Check for latest
+  share_plus: ^7.2.2 # Check for latest
+
+  # QR Code
+  qr_flutter: ^4.1.0 # Check for latest
+  image_gallery_saver: ^2.0.3 # Check for latest
+
+  # Secure Storage and DB Encryption
+  flutter_secure_storage: ^9.0.0 # Check for latest
+  sqflite_sqlcipher: ^2.1.0 # Check for latest that's compatible with sqflite 2.3.x. May need to adjust sqflite version.
+  # Note: sqflite_sqlcipher might have its own sqlite3 bindings or require specific setup.
+
+  # Connectivity
+  connectivity_plus: ^5.0.2 # Check for latest
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

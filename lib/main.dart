@@ -6,9 +6,10 @@ import 'screens/login_screen.dart';
 import 'screens/registration_screen.dart';
 import 'screens/project_list_screen.dart';
 import 'screens/new_edit_project_screen.dart';
-import 'screens/settings_screen.dart'; // Added SettingsScreen
+import 'screens/settings_screen.dart';
+import 'screens/abnt_catalog_screen.dart'; // Added AbntCatalogScreen
 import 'providers/project_provider.dart';
-import 'services/google_auth_service.dart'; // Added GoogleAuthService
+import 'services/google_auth_service.dart';
 
 
 void main() async {
@@ -72,7 +73,8 @@ class MyApp extends StatelessWidget {
             return ProjectListScreen(userName: userName);
           },
           NewEditProjectScreen.routeNameAdd: (context) => const NewEditProjectScreen(),
-          SettingsScreen.routeName: (context) => const SettingsScreen(), // Added SettingsScreen route
+          SettingsScreen.routeName: (context) => const SettingsScreen(),
+          AbntCatalogScreen.routeName: (context) => const AbntCatalogScreen(), // Added AbntCatalogScreen route
         },
         onGenerateRoute: (settings) {
           if (settings.name == ProjectListScreen.routeName) {
@@ -84,7 +86,7 @@ class MyApp extends StatelessWidget {
             );
           }
           if (settings.name == NewEditProjectScreen.routeNameEdit) {
-            final projectToEdit = settings.arguments as Project?; // Ensure Project model is imported if not already
+            final projectToEdit = settings.arguments as Project?; 
             return MaterialPageRoute(
               builder: (context) {
                 return NewEditProjectScreen(projectToEdit: projectToEdit);

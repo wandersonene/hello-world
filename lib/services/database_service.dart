@@ -2,32 +2,31 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io'; // For File operations
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
+
 import '../models/user_model.dart';
 import '../models/project_model.dart';
 import '../models/inspection_module_model.dart';
 import '../models/checklist_item_model.dart';
 import '../models/photo_model.dart';
-import '../models/sync_log_model.dart'; // Import SyncLog model
+import '../models/sync_log_model.dart';
+import '../models/norma_model.dart';
+import '../models/project_norma_model.dart';
 
 class DatabaseService {
   static const String _databaseName = 'field_app.db';
-  static const int _databaseVersion = 1;
+  static const int _databaseVersion = 5; // Incremented version for indexes
 
   // User table
   static const String tableUsers = 'users';
-  static const String columnId = 'id';
+  static const String columnId = 'id'; 
   static const String columnName = 'name';
-  static const String columnUsername = 'username'; // CPF or Email
+  static const String columnUsername = 'username';
   static const String columnPasswordHash = 'password_hash';
   static const String columnSalt = 'salt';
 
   // Project table
   static const String tableProjects = 'projects';
-  // static const String columnId = 'id'; // Already defined for users, can be reused if careful or aliased
-  static const String columnProjectId = 'id'; // Explicit for projects
+  static const String columnProjectId = 'id'; 
   static const String columnProjectTitle = 'title';
   static const String columnProjectClient = 'client';
   static const String columnProjectType = 'project_type';
@@ -48,7 +47,7 @@ class DatabaseService {
   static const String tableChecklistItems = 'checklist_items';
   static const String columnItemId = 'id';
   static const String columnItemInspectionModuleId = 'inspection_module_id';
-  static const String columnItemOrder = 'item_order'; // Renamed to avoid SQL keyword 'order'
+  static const String columnItemOrder = 'item_order';
   static const String columnItemDescription = 'description';
   static const String columnItemItemType = 'item_type';
   static const String columnItemResponseOkNotConform = 'response_ok_not_conform';
@@ -78,291 +77,251 @@ class DatabaseService {
   static const String columnSyncLogLastSyncTimestamp = 'last_sync_timestamp';
   static const String columnSyncLogStatus = 'status';
   static const String columnSyncLogMessage = 'message';
+  static const String columnSyncLogBytesTransferred = 'bytes_transferred';
+  static const String columnSyncLogTotalBytes = 'total_bytes';
+  static const String columnSyncLogCurrentOperation = 'current_operation';
+  static const String columnSyncLogDriveReportWebViewLink = 'drive_report_web_view_link'; // New column
 
-  // Make this a singleton class.
+  // Norma table
+  static const String tableNormas = 'normas';
+  static const String columnNormaId = 'id'; 
+  static const String columnNormaDescription = 'description';
+  static const String columnNormaCreatedAt = 'created_at';
+
+  // ProjectNorma table
+  static const String tableProjectNormas = 'project_normas';
+  static const String columnProjectNormaId = 'id'; 
+  static const String columnProjectNormaProjectId = 'project_id'; 
+  static const String columnProjectNormaNormaId = 'norma_id'; 
+  static const String columnProjectNormaLinkedAt = 'linked_at';
+
+
   DatabaseService._privateConstructor();
   static final DatabaseService instance = DatabaseService._privateConstructor();
-
-  // Only have a single app-wide reference to the database.
   static Database? _database;
+
   Future<Database> get database async {
     if (_database != null) return _database!;
     _database = await _initDatabase();
     return _database!;
   }
 
-  // Initialize the database
   Future<Database> _initDatabase() async {
     final documentsDirectory = await getApplicationDocumentsDirectory();
     final path = join(documentsDirectory.path, _databaseName);
     return await openDatabase(
       path,
-      version: _databaseVersion,
+      version: _databaseVersion, // Use the class constant
       onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
     );
   }
 
-  // SQL code to create the database table
   Future<void> _onCreate(Database db, int version) async {
+    await db.execute('PRAGMA foreign_keys = ON;');
+    // Create all tables, including the newest sync_logs with all columns
     await db.execute('''
       CREATE TABLE $tableUsers (
-        $columnId INTEGER PRIMARY KEY AUTOINCREMENT,
-        $columnName TEXT NOT NULL,
-        $columnUsername TEXT NOT NULL UNIQUE,
-        $columnPasswordHash TEXT NOT NULL,
-        $columnSalt TEXT NOT NULL
+        $columnId INTEGER PRIMARY KEY AUTOINCREMENT, $columnName TEXT NOT NULL, $columnUsername TEXT NOT NULL UNIQUE,
+        $columnPasswordHash TEXT NOT NULL, $columnSalt TEXT NOT NULL
       )
     ''');
-
     await db.execute('''
       CREATE TABLE $tableProjects (
-        $columnProjectId INTEGER PRIMARY KEY AUTOINCREMENT,
-        $columnProjectTitle TEXT NOT NULL,
-        $columnProjectClient TEXT,
-        $columnProjectType TEXT,
-        $columnProjectStatus TEXT NOT NULL,
-        $columnProjectCreatedAt TEXT NOT NULL,
-        $columnProjectUpdatedAt TEXT NOT NULL
+        $columnProjectId INTEGER PRIMARY KEY AUTOINCREMENT, $columnProjectTitle TEXT NOT NULL, $columnProjectClient TEXT, 
+        $columnProjectType TEXT, $columnProjectStatus TEXT NOT NULL, $columnProjectCreatedAt TEXT NOT NULL, $columnProjectUpdatedAt TEXT NOT NULL
       )
     ''');
-
-    await db.execute('''
+     await db.execute('''
       CREATE TABLE $tableInspectionModules (
-        $columnModuleId INTEGER PRIMARY KEY AUTOINCREMENT,
-        $columnModuleProjectId INTEGER NOT NULL,
-        $columnModuleName TEXT NOT NULL,
-        $columnModuleStatus TEXT NOT NULL,
-        $columnModuleCreatedAt TEXT NOT NULL,
-        $columnModuleUpdatedAt TEXT NOT NULL,
+        $columnModuleId INTEGER PRIMARY KEY AUTOINCREMENT, $columnModuleProjectId INTEGER NOT NULL, $columnModuleName TEXT NOT NULL,
+        $columnModuleStatus TEXT NOT NULL, $columnModuleCreatedAt TEXT NOT NULL, $columnModuleUpdatedAt TEXT NOT NULL,
         FOREIGN KEY ($columnModuleProjectId) REFERENCES $tableProjects ($columnProjectId) ON DELETE CASCADE
       )
     ''');
-
     await db.execute('''
       CREATE TABLE $tableChecklistItems (
-        $columnItemId INTEGER PRIMARY KEY AUTOINCREMENT,
-        $columnItemInspectionModuleId INTEGER NOT NULL,
-        $columnItemOrder INTEGER NOT NULL,
-        $columnItemDescription TEXT NOT NULL,
-        $columnItemItemType TEXT NOT NULL,
-        $columnItemResponseOkNotConform INTEGER,
-        $columnItemResponseText TEXT,
-        $columnItemResponseNumber REAL,
-        $columnItemIsMandatory INTEGER NOT NULL DEFAULT 0,
-        $columnItemNotes TEXT,
-        $columnItemCreatedAt TEXT NOT NULL,
-        $columnItemUpdatedAt TEXT NOT NULL,
+        $columnItemId INTEGER PRIMARY KEY AUTOINCREMENT, $columnItemInspectionModuleId INTEGER NOT NULL, $columnItemOrder INTEGER NOT NULL,
+        $columnItemDescription TEXT NOT NULL, $columnItemItemType TEXT NOT NULL, $columnItemResponseOkNotConform INTEGER,
+        $columnItemResponseText TEXT, $columnItemResponseNumber REAL, $columnItemIsMandatory INTEGER NOT NULL DEFAULT 0,
+        $columnItemNotes TEXT, $columnItemCreatedAt TEXT NOT NULL, $columnItemUpdatedAt TEXT NOT NULL,
         FOREIGN KEY ($columnItemInspectionModuleId) REFERENCES $tableInspectionModules ($columnModuleId) ON DELETE CASCADE
       )
     ''');
-
     await db.execute('''
       CREATE TABLE $tablePhotos (
-        $columnPhotoId INTEGER PRIMARY KEY AUTOINCREMENT,
-        $columnPhotoProjectId INTEGER NOT NULL,
-        $columnPhotoInspectionModuleId INTEGER,
-        $columnPhotoChecklistItemId INTEGER,
-        $columnPhotoFilePath TEXT NOT NULL,
-        $columnPhotoCaption TEXT,
-        $columnPhotoCreatedAt TEXT NOT NULL,
-        $columnPhotoLatitude REAL,
-        $columnPhotoLongitude REAL,
+        $columnPhotoId INTEGER PRIMARY KEY AUTOINCREMENT, $columnPhotoProjectId INTEGER NOT NULL, $columnPhotoInspectionModuleId INTEGER,
+        $columnPhotoChecklistItemId INTEGER, $columnPhotoFilePath TEXT NOT NULL, $columnPhotoCaption TEXT, $columnPhotoCreatedAt TEXT NOT NULL,
+        $columnPhotoLatitude REAL, $columnPhotoLongitude REAL,
         FOREIGN KEY ($columnPhotoProjectId) REFERENCES $tableProjects ($columnProjectId) ON DELETE CASCADE,
         FOREIGN KEY ($columnPhotoInspectionModuleId) REFERENCES $tableInspectionModules ($columnModuleId) ON DELETE SET NULL,
         FOREIGN KEY ($columnPhotoChecklistItemId) REFERENCES $tableChecklistItems ($columnItemId) ON DELETE SET NULL
       )
     ''');
-
     await db.execute('''
       CREATE TABLE $tableSyncLogs (
-        $columnSyncLogId INTEGER PRIMARY KEY AUTOINCREMENT,
-        $columnSyncLogProjectId INTEGER NOT NULL UNIQUE, 
-        $columnSyncLogLastSyncTimestamp TEXT NOT NULL,
-        $columnSyncLogStatus TEXT NOT NULL,
-        $columnSyncLogMessage TEXT,
+        $columnSyncLogId INTEGER PRIMARY KEY AUTOINCREMENT, $columnSyncLogProjectId INTEGER NOT NULL UNIQUE, 
+        $columnSyncLogLastSyncTimestamp TEXT NOT NULL, $columnSyncLogStatus TEXT NOT NULL, $columnSyncLogMessage TEXT,
+        $columnSyncLogBytesTransferred INTEGER, $columnSyncLogTotalBytes INTEGER, $columnSyncLogCurrentOperation TEXT,
+        $columnSyncLogDriveReportWebViewLink TEXT,
         FOREIGN KEY ($columnSyncLogProjectId) REFERENCES $tableProjects ($columnProjectId) ON DELETE CASCADE
       )
     ''');
-     await db.execute('PRAGMA foreign_keys = ON;'); // Ensure foreign keys are enabled
+    await _createNormasTables(db); // Call helper for Normas tables
+  }
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    await db.execute('PRAGMA foreign_keys = ON;'); // Ensure it's on for upgrades too
+    if (oldVersion < 2) { 
+      await db.execute('ALTER TABLE $tableSyncLogs ADD COLUMN $columnSyncLogBytesTransferred INTEGER;');
+      await db.execute('ALTER TABLE $tableSyncLogs ADD COLUMN $columnSyncLogTotalBytes INTEGER;');
+      await db.execute('ALTER TABLE $tableSyncLogs ADD COLUMN $columnSyncLogCurrentOperation TEXT;');
+    }
+    if (oldVersion < 3) { 
+      await _createNormasTables(db); 
+    }
+    if (oldVersion < 4) { 
+        await db.execute('ALTER TABLE $tableSyncLogs ADD COLUMN $columnSyncLogDriveReportWebViewLink TEXT;');
+    }
+    if (oldVersion < 5) {
+      // Add indexes for performance
+      await db.execute('CREATE INDEX IF NOT EXISTS idx_projects_updated_at ON $tableProjects ($columnProjectUpdatedAt);');
+      await db.execute('CREATE INDEX IF NOT EXISTS idx_modules_project_id ON $tableInspectionModules ($columnModuleProjectId);');
+      await db.execute('CREATE INDEX IF NOT EXISTS idx_items_module_id ON $tableChecklistItems ($columnItemInspectionModuleId);');
+      await db.execute('CREATE INDEX IF NOT EXISTS idx_photos_project_id ON $tablePhotos ($columnPhotoProjectId);');
+      await db.execute('CREATE INDEX IF NOT EXISTS idx_photos_module_id ON $tablePhotos ($columnPhotoInspectionModuleId);');
+      await db.execute('CREATE INDEX IF NOT EXISTS idx_photos_item_id ON $tablePhotos ($columnPhotoChecklistItemId);');
+      // Note: Norma and ProjectNorma tables already have good primary/unique keys that serve as indexes for their common lookups.
+    }
+  }
+
+  Future<void> _createNormasTables(DatabaseExecutor db) async {
+    await db.execute('''
+      CREATE TABLE $tableNormas (
+        $columnNormaId TEXT PRIMARY KEY, $columnNormaDescription TEXT NOT NULL, $columnNormaCreatedAt TEXT NOT NULL
+      )
+    ''');
+    await db.execute('''
+      CREATE TABLE $tableProjectNormas (
+        $columnProjectNormaId INTEGER PRIMARY KEY AUTOINCREMENT, $columnProjectNormaProjectId INTEGER NOT NULL,
+        $columnProjectNormaNormaId TEXT NOT NULL, $columnProjectNormaLinkedAt TEXT NOT NULL,
+        FOREIGN KEY ($columnProjectNormaProjectId) REFERENCES $tableProjects ($columnProjectId) ON DELETE CASCADE,
+        FOREIGN KEY ($columnProjectNormaNormaId) REFERENCES $tableNormas ($columnNormaId) ON DELETE CASCADE,
+        UNIQUE ($columnProjectNormaProjectId, $columnProjectNormaNormaId) 
+      )
+    ''');
   }
 
   // --- User Management ---
-  // Insert a user into the database
-  Future<int> insertUser(User user) async {
+  Future<int> insertUser(User user) async { 
     final db = await database;
     try {
       return await db.insert(tableUsers, user.toMap());
     } catch (e) {
-      // Handle specific SQLite exception for UNIQUE constraint violation
-      if (e.toString().contains('UNIQUE constraint failed: users.username')) {
+      if (e.toString().contains('UNIQUE constraint failed')) {
         throw Exception('Username (CPF/Email) already exists.');
       }
-      rethrow; // Re-throw other exceptions
+      rethrow;
     }
   }
-
-  // Retrieve a user by username (CPF/Email)
-  Future<User?> getUserByUsername(String username) async {
+  Future<User?> getUserByUsername(String username) async { 
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(
-      tableUsers,
-      where: '$columnUsername = ?',
-      whereArgs: [username],
+      tableUsers, where: '$columnUsername = ?', whereArgs: [username],
     );
-
-    if (maps.isNotEmpty) {
-      return User.fromMap(maps.first);
-    } else {
-      return null;
-    }
-  }
-
-  // Optional: Close the database (though often not explicitly needed in Flutter apps)
-  Future<void> close() async {
-    final db = await database;
-    db.close();
-    _database = null;
+    if (maps.isNotEmpty) return User.fromMap(maps.first);
+    return null;
   }
 
   // --- Project Management ---
-
-  // Add a new project
-  Future<int> addProject(Project project) async {
+  Future<int> addProject(Project project) async { 
     final db = await database;
     return await db.insert(tableProjects, project.toMap());
   }
-
-  // Get a single project by ID
-  Future<Project?> getProject(int id) async {
+  Future<Project?> getProject(int id) async { 
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(
-      tableProjects,
-      where: '$columnProjectId = ?',
-      whereArgs: [id],
+      tableProjects, where: '$columnProjectId = ?', whereArgs: [id],
     );
-
-    if (maps.isNotEmpty) {
-      return Project.fromMap(maps.first);
-    } else {
-      return null;
-    }
+    if (maps.isNotEmpty) return Project.fromMap(maps.first);
+    return null;
   }
-
-  // Get all projects, sorted by updated_at descending
-  Future<List<Project>> getAllProjects() async {
+  Future<List<Project>> getAllProjects() async { 
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(
-      tableProjects,
-      orderBy: '$columnProjectUpdatedAt DESC',
+      tableProjects, orderBy: '$columnProjectUpdatedAt DESC',
     );
-
-    return List.generate(maps.length, (i) {
-      return Project.fromMap(maps[i]);
-    });
+    return List.generate(maps.length, (i) => Project.fromMap(maps[i]));
   }
-
-  // Update an existing project
-  Future<int> updateProject(Project project) async {
+  Future<int> updateProject(Project project) async { 
     final db = await database;
     return await db.update(
-      tableProjects,
-      project.toMap(),
-      where: '$columnProjectId = ?',
-      whereArgs: [project.id],
+      tableProjects, project.toMap(), where: '$columnProjectId = ?', whereArgs: [project.id],
     );
   }
-
-  // Delete a project by ID
-  Future<int> deleteProject(int id) async {
+  Future<int> deleteProject(int id) async { 
     final db = await database;
-    return await db.delete(
-      tableProjects,
-      where: '$columnProjectId = ?',
-      whereArgs: [id],
-    );
+    return await db.delete(tableProjects, where: '$columnProjectId = ?', whereArgs: [id]);
   }
 
   // --- Inspection Module Management ---
-
-  Future<int> addInspectionModule(InspectionModule module) async {
+  Future<int> addInspectionModule(InspectionModule module) async { 
     final db = await database;
     int moduleId = await db.insert(tableInspectionModules, module.toMap());
-    // After adding the module, add its predefined checklist items
     if (moduleId > 0 && PredefinedChecklists.isPredefined(module.name)) {
         await addPredefinedChecklistItems(moduleId, module.name);
     }
     return moduleId;
   }
-
-  Future<List<InspectionModule>> getInspectionModulesForProject(int projectId) async {
+  Future<List<InspectionModule>> getInspectionModulesForProject(int projectId) async { 
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(
-      tableInspectionModules,
-      where: '$columnModuleProjectId = ?',
-      whereArgs: [projectId],
-      orderBy: '$columnModuleCreatedAt ASC',
+      tableInspectionModules, where: '$columnModuleProjectId = ?', whereArgs: [projectId], orderBy: '$columnModuleCreatedAt ASC',
     );
     return List.generate(maps.length, (i) => InspectionModule.fromMap(maps[i]));
   }
-
-  Future<int> updateInspectionModule(InspectionModule module) async {
+  Future<InspectionModule?> getInspectionModule(int moduleId) async { 
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      tableInspectionModules, where: '$columnModuleId = ?', whereArgs: [moduleId],
+    );
+    if (maps.isNotEmpty) return InspectionModule.fromMap(maps.first);
+    return null;
+  }
+  Future<int> updateInspectionModule(InspectionModule module) async { 
     final db = await database;
     return await db.update(
-      tableInspectionModules,
-      module.toMap(),
-      where: '$columnModuleId = ?',
-      whereArgs: [module.id],
+      tableInspectionModules, module.toMap(), where: '$columnModuleId = ?', whereArgs: [module.id],
     );
   }
-
-  Future<int> deleteInspectionModule(int moduleId) async {
+  Future<int> deleteInspectionModule(int moduleId) async { 
     final db = await database;
-    // ON DELETE CASCADE will handle checklist items
-    return await db.delete(
-      tableInspectionModules,
-      where: '$columnModuleId = ?',
-      whereArgs: [moduleId],
-    );
+    return await db.delete(tableInspectionModules, where: '$columnModuleId = ?', whereArgs: [moduleId]);
   }
 
   // --- Checklist Item Management ---
-
-  Future<int> addChecklistItem(ChecklistItem item) async {
+  Future<int> addChecklistItem(ChecklistItem item) async { 
     final db = await database;
     return await db.insert(tableChecklistItems, item.toMap());
   }
-
-  Future<List<ChecklistItem>> getChecklistItemsForModule(int moduleId) async {
+  Future<List<ChecklistItem>> getChecklistItemsForModule(int moduleId) async { 
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(
-      tableChecklistItems,
-      where: '$columnItemInspectionModuleId = ?',
-      whereArgs: [moduleId],
-      orderBy: '$columnItemOrder ASC',
+      tableChecklistItems, where: '$columnItemInspectionModuleId = ?', whereArgs: [moduleId], orderBy: '$columnItemOrder ASC',
     );
     return List.generate(maps.length, (i) => ChecklistItem.fromMap(maps[i]));
   }
-
-  Future<int> updateChecklistItem(ChecklistItem item) async {
+  Future<int> updateChecklistItem(ChecklistItem item) async { 
     final db = await database;
     return await db.update(
-      tableChecklistItems,
-      item.toMap(),
-      where: '$columnItemId = ?',
-      whereArgs: [item.id],
+      tableChecklistItems, item.toMap(), where: '$columnItemId = ?', whereArgs: [item.id],
     );
   }
-
-  Future<int> deleteChecklistItem(int itemId) async {
+  Future<int> deleteChecklistItem(int itemId) async { 
     final db = await database;
-    return await db.delete(
-      tableChecklistItems,
-      where: '$columnItemId = ?',
-      whereArgs: [itemId],
-    );
+    return await db.delete(tableChecklistItems, where: '$columnItemId = ?', whereArgs: [itemId]);
   }
-
-  Future<void> addPredefinedChecklistItems(int moduleId, String moduleType) async {
+  Future<void> addPredefinedChecklistItems(int moduleId, String moduleType) async { 
     final items = PredefinedChecklists.getChecklistItems(moduleType, moduleId);
     final db = await database;
     Batch batch = db.batch();
@@ -373,127 +332,109 @@ class DatabaseService {
   }
 
   // --- Photo Management ---
-  Future<int> addPhoto(Photo photo) async {
+  Future<int> addPhoto(Photo photo) async { 
     final db = await database;
     return await db.insert(tablePhotos, photo.toMap());
   }
-
-  Future<List<Photo>> getPhotosForProject(int projectId) async {
+  Future<List<Photo>> getPhotosForChecklistItem(int checklistItemId) async { 
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      tablePhotos, where: '$columnPhotoChecklistItemId = ?', whereArgs: [checklistItemId], orderBy: '$columnPhotoCreatedAt DESC',
+    );
+    return List.generate(maps.length, (i) => Photo.fromMap(maps[i]));
+  }
+   Future<List<Photo>> getPhotosForProject(int projectId) async { // Added this based on ProjectListScreen sync logic
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(
       tablePhotos,
-      where: '$columnPhotoProjectId = ? AND $columnPhotoInspectionModuleId IS NULL AND $columnPhotoChecklistItemId IS NULL',
+      where: '$columnPhotoProjectId = ?', // Simplified to get ALL photos for a project
       whereArgs: [projectId],
       orderBy: '$columnPhotoCreatedAt DESC',
     );
     return List.generate(maps.length, (i) => Photo.fromMap(maps[i]));
   }
-
-  Future<List<Photo>> getPhotosForInspectionModule(int inspectionModuleId) async {
+  Future<Photo?> getPhotoById(int photoId) async { 
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(
-      tablePhotos,
-      where: '$columnPhotoInspectionModuleId = ? AND $columnPhotoChecklistItemId IS NULL',
-      whereArgs: [inspectionModuleId],
-      orderBy: '$columnPhotoCreatedAt DESC',
-    );
-    return List.generate(maps.length, (i) => Photo.fromMap(maps[i]));
-  }
-
-  Future<List<Photo>> getPhotosForChecklistItem(int checklistItemId) async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      tablePhotos,
-      where: '$columnPhotoChecklistItemId = ?',
-      whereArgs: [checklistItemId],
-      orderBy: '$columnPhotoCreatedAt DESC',
-    );
-    return List.generate(maps.length, (i) => Photo.fromMap(maps[i]));
-  }
-  
-  Future<Photo?> getPhotoById(int photoId) async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      tablePhotos,
-      where: '$columnPhotoId = ?',
-      whereArgs: [photoId],
-    );
-    if (maps.isNotEmpty) {
-      return Photo.fromMap(maps.first);
-    }
+      tablePhotos, where: '$columnPhotoId = ?', whereArgs: [photoId]);
+    if (maps.isNotEmpty) return Photo.fromMap(maps.first);
     return null;
   }
-
-  Future<int> updatePhoto(Photo photo) async {
+  Future<int> updatePhoto(Photo photo) async { 
     final db = await database;
     return await db.update(
-      tablePhotos,
-      photo.toMap(),
-      where: '$columnPhotoId = ?',
-      whereArgs: [photo.id],
-    );
+      tablePhotos, photo.toMap(), where: '$columnPhotoId = ?', whereArgs: [photo.id]);
   }
-
-  Future<int> deletePhoto(int photoId) async {
+  Future<int> deletePhoto(int photoId) async { 
     final db = await database;
-    // First, retrieve the photo to get its file path
     final photo = await getPhotoById(photoId);
     if (photo != null) {
-      // Delete the file from local storage
       try {
         final file = File(photo.filePath);
-        if (await file.exists()) {
-          await file.delete();
-        }
-      } catch (e) {
-        // Log error or handle as needed
-        print('Error deleting file: ${photo.filePath}, Error: $e');
-      }
+        if (await file.exists()) await file.delete();
+      } catch (e) { print('Error deleting file: ${photo.filePath}, Error: $e'); }
     }
-    // Then, delete the record from the database
-    return await db.delete(
-      tablePhotos,
-      where: '$columnPhotoId = ?',
-      whereArgs: [photoId],
-    );
+    return await db.delete(tablePhotos, where: '$columnPhotoId = ?', whereArgs: [photoId]);
   }
 
   // --- SyncLog Management ---
-  Future<int> addOrUpdateSyncLog(SyncLog syncLog) async {
+  Future<int> addOrUpdateSyncLog(SyncLog syncLog) async { 
     final db = await database;
-    // Try to find an existing log for the project
     final existingLog = await getSyncLogForProject(syncLog.projectId);
     if (existingLog != null) {
-      // Update existing log
       return await db.update(
-        tableSyncLogs,
-        syncLog.copyWith(id: existingLog.id).toMap(), // Ensure we use the existing ID
-        where: '$columnSyncLogId = ?',
-        whereArgs: [existingLog.id],
-      );
+        tableSyncLogs, syncLog.copyWith(id: existingLog.id).toMap(), where: '$columnSyncLogId = ?', whereArgs: [existingLog.id]);
     } else {
-      // Insert new log
       return await db.insert(tableSyncLogs, syncLog.toMap());
     }
   }
-
-  Future<SyncLog?> getSyncLogForProject(int projectId) async {
+  Future<SyncLog?> getSyncLogForProject(int projectId) async { 
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(
-      tableSyncLogs,
-      where: '$columnSyncLogProjectId = ?',
-      whereArgs: [projectId],
-    );
-    if (maps.isNotEmpty) {
-      return SyncLog.fromMap(maps.first);
-    }
+      tableSyncLogs, where: '$columnSyncLogProjectId = ?', whereArgs: [projectId]);
+    if (maps.isNotEmpty) return SyncLog.fromMap(maps.first);
     return null;
+  }
+
+  // --- Norma Management ---
+  Future<Norma> addOrGetNorma(String normaId, String description) async { 
+    final db = await database;
+    List<Map<String, dynamic>> maps = await db.query(
+      tableNormas, where: '$columnNormaId = ?', whereArgs: [normaId]);
+    if (maps.isNotEmpty) {
+      return Norma.fromMap(maps.first);
+    } else {
+      final newNorma = Norma(id: normaId, description: description, createdAt: DateTime.now());
+      await db.insert(tableNormas, newNorma.toMap());
+      return newNorma;
+    }
+  }
+  Future<void> linkNormaToProject(int projectId, String normaId) async { 
+    final db = await database;
+    final projectNorma = ProjectNorma(projectId: projectId, normaId: normaId, linkedAt: DateTime.now());
+    try {
+      await db.insert(tableProjectNormas, projectNorma.toMap(), conflictAlgorithm: ConflictAlgorithm.ignore);
+    } catch (e) { print("Error linking norma to project: $e"); }
+  }
+  Future<List<Norma>> getNormasForProject(int projectId) async { 
+    final db = await database;
+    final String sql = '''
+      SELECT N.* FROM $tableNormas N
+      INNER JOIN $tableProjectNormas PN ON N.$columnNormaId = PN.$columnProjectNormaNormaId
+      WHERE PN.$columnProjectNormaProjectId = ?
+      ORDER BY N.$columnNormaId ASC
+    ''';
+    final List<Map<String, dynamic>> maps = await db.rawQuery(sql, [projectId]);
+    return List.generate(maps.length, (i) => Norma.fromMap(maps[i]));
+  }
+  Future<int> removeNormaFromProject(int projectId, String normaId) async { 
+    final db = await database;
+    return await db.delete(
+      tableProjectNormas, where: '$columnProjectNormaProjectId = ? AND $columnProjectNormaNormaId = ?', whereArgs: [projectId, normaId]);
   }
 }
 
-
-// Helper class for Predefined Checklists
-class PredefinedChecklists {
+class PredefinedChecklists { 
   static const String visualInspection = "Inspeção Visual";
   static const String simplePolarity = "Polaridade Simplificada";
   static const String basicInsulationResistance = "Resistência de Isolamento Básica";
@@ -511,7 +452,6 @@ class PredefinedChecklists {
   static List<ChecklistItem> getChecklistItems(String moduleType, int moduleId) {
     DateTime now = DateTime.now();
     List<Map<String, dynamic>> itemsData = [];
-
     switch (moduleType) {
       case visualInspection:
         itemsData = [
@@ -542,7 +482,6 @@ class PredefinedChecklists {
         ];
         break;
     }
-
     return itemsData.map((data) => ChecklistItem(
       inspectionModuleId: moduleId,
       order: data['order'] as int,
