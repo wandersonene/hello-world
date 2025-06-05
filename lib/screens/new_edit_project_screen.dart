@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:io'; // For checking signature file
 import 'package:flutter/material.dart';
-import 'dart:io'; 
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'dart:io'; 
+import 'dart:io';
 import 'dart:typed_data'; // For QR code image
 import 'dart:ui' as ui; // For QR code image rendering
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:path_provider/path_provider.dart'; 
-import 'package:path/path.dart' as p; 
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 import 'package:provider/provider.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -20,15 +20,15 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../models/project_model.dart';
 import '../models/inspection_module_model.dart';
-import '../models/norma_model.dart'; 
+import '../models/norma_model.dart';
 import '../models/sync_log_model.dart'; // Added for SyncLog
 import '../providers/project_provider.dart';
 import '../providers/inspection_provider.dart';
-import '../services/database_service.dart'; 
-import '../services/report_service.dart'; 
+import '../services/database_service.dart';
+import '../services/report_service.dart';
 import '../service_locator.dart'; // Added for DatabaseService direct access
 import 'inspection_screen.dart';
-import 'signature_screen.dart'; 
+import 'signature_screen.dart';
 
 class NewEditProjectScreen extends StatefulWidget {
   static const String routeNameAdd = '/add-project';
@@ -69,11 +69,11 @@ class _NewEditProjectScreenState extends State<NewEditProjectScreen> {
         if (!mounted) return;
         _inspectionProvider.loadModulesForProject(projectId);
         Provider.of<ProjectProvider>(context, listen: false).loadNormasForProject(projectId); // Load Normas
-        _loadSignaturePath(); 
+        _loadSignaturePath();
       });
     }
   }
-  
+
   Future<void> _loadSignaturePath() async {
     if (widget.projectToEdit?.id == null) return;
     try {
@@ -81,7 +81,7 @@ class _NewEditProjectScreenState extends State<NewEditProjectScreen> {
       final String signaturesDir = p.join(appDocDir.path, 'project_signatures');
       final String fileName = 'signature_project_${widget.projectToEdit!.id}.png';
       final String filePath = p.join(signaturesDir, fileName);
-      
+
       if (await File(filePath).exists()) {
         setState(() {
           _signaturePath = filePath;
@@ -101,7 +101,7 @@ class _NewEditProjectScreenState extends State<NewEditProjectScreen> {
     _projectTypeController.dispose();
     // Clear norms for the specific project when leaving the screen,
     // if ProjectProvider is scoped more broadly or needs cleanup.
-    // Provider.of<ProjectProvider>(context, listen: false).clearCurrentProjectNormas(); 
+    // Provider.of<ProjectProvider>(context, listen: false).clearCurrentProjectNormas();
     super.dispose();
   }
 
@@ -257,7 +257,7 @@ class _NewEditProjectScreenState extends State<NewEditProjectScreen> {
                 const SizedBox(height: 8),
                 _buildInspectionModulesList(),
               ],
-              
+
               // PDF Report Generation Button
               if (_isEditing && widget.projectToEdit?.id != null) ...[
                 const SizedBox(height: 24),
@@ -299,7 +299,7 @@ class _NewEditProjectScreenState extends State<NewEditProjectScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16), 
+                const SizedBox(height: 16),
               ],
 
               // ABNT Normas Section
@@ -545,7 +545,7 @@ class _NewEditProjectScreenState extends State<NewEditProjectScreen> {
     try {
       final reportService = ReportService(); // Consider injecting via provider/sl if it grows
       final String? filePath = await reportService.generateProjectReport(projectId, signatureImagePath: signaturePath);
-      
+
       Navigator.of(context, rootNavigator: true).pop(); // Dismiss loading indicator
 
       if (filePath != null) {
@@ -762,7 +762,7 @@ class _NewEditProjectScreenState extends State<NewEditProjectScreen> {
   }
 
   Future<String?> _ensureReportGenerated(BuildContext context, int projectId, String? signaturePath) async {
-    // Simple check: if a report path exists, assume it's current. 
+    // Simple check: if a report path exists, assume it's current.
     // For a real app, you might check timestamps or always regenerate.
     final reportService = ReportService();
     final String safeProjectTitle = (widget.projectToEdit?.title ?? "Projeto_Sem_Titulo").replaceAll(RegExp(r'[^\w\s-]'), '_').replaceAll(' ', '_');
@@ -789,7 +789,7 @@ class _NewEditProjectScreenState extends State<NewEditProjectScreen> {
             filePath = ""; // Directory doesn't exist
         }
     }
-    
+
     if (!await File(filePath).exists()) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Gerando relatório PDF primeiro...')),
@@ -838,7 +838,7 @@ class _NewEditProjectScreenState extends State<NewEditProjectScreen> {
       );
     }
   }
-  
+
   Future<void> _showQrCodeDialog(BuildContext context, int projectId) async {
     final dbService = sl<DatabaseService>();
     final syncLog = await dbService.getSyncLogForProject(projectId);

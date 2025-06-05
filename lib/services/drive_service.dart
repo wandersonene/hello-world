@@ -66,7 +66,7 @@ class DriveService {
     final gdrive.File folderToCreate = gdrive.File()
       ..name = folderName
       ..mimeType = "application/vnd.google-apps.folder";
-    
+
     if (parentFolderId != null) {
       folderToCreate.parents = [parentFolderId];
     }
@@ -89,7 +89,7 @@ class DriveService {
       final gdrive.FileList result = await _driveApi.files.list(
         q: query,
         // Request all necessary fields, including webViewLink for sharing/QR codes
-        $fields: "files(id, name, modifiedTime, size, version, webViewLink, webContentLink)", 
+        $fields: "files(id, name, modifiedTime, size, version, webViewLink, webContentLink)",
       );
       if (result.files != null && result.files!.isNotEmpty) {
         return result.files!.first;
@@ -108,7 +108,7 @@ class DriveService {
 
   Future<gdrive.File> uploadFile(File localFile, String driveFolderId, {String? existingFileId}) async {
     final gdrive.File fileMetadata = gdrive.File()..name = localFile.path.split('/').last;
-    
+
     if (existingFileId == null) {
        fileMetadata.parents = [driveFolderId];
     }

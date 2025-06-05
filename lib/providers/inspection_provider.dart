@@ -185,7 +185,7 @@ class InspectionProvider with ChangeNotifier {
       notifyListeners();
     }
   }
-  
+
   Future<void> updateModuleStatus(int moduleId, String status, {bool skipItemReload = false}) async {
     InspectionModule? module = _currentModule?.id == moduleId ? _currentModule : await _databaseService.getInspectionModule(moduleId);
     if (module != null) {
@@ -269,7 +269,7 @@ class InspectionProvider with ChangeNotifier {
       notifyListeners();
     }
   }
-  
+
   Future<void> updatePhotoCaption(int photoId, String newCaption) async {
     _isLoadingPhotos = true;
     _photosErrorMessage = null;

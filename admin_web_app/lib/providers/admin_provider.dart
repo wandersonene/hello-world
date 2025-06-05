@@ -63,10 +63,10 @@ class AdminProvider with ChangeNotifier {
           // Fetch the main PDF report for this project
           final reports = await _driveService!.listReportPdfsInFolder(folder.id!);
           gdrive.File? mainReport = reports.isNotEmpty ? reports.first : null;
-          
+
           // Fetch photos and count them
           final photos = await _driveService!.listPhotosInSubfolder(folder.id!, "Fotos");
-          
+
           projects.add(
             DriveProjectModel.fromDriveFolder(folder).copyWith(
               reportPdf: mainReport,
@@ -86,7 +86,7 @@ class AdminProvider with ChangeNotifier {
       notifyListeners();
     }
   }
-  
+
   @override
   void dispose() {
     _authService.removeListener(_onAuthChanged);

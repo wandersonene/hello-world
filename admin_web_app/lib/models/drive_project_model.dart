@@ -6,7 +6,7 @@ class DriveProjectModel extends Equatable {
   final String name;
   final DateTime? modifiedTime;
   final String? webViewLink; // Link to the folder itself on Drive
-  
+
   // Details typically fetched separately or after initial listing
   final gdrive.File? reportPdf; // The main PDF report file from Drive
   final int photoCount;

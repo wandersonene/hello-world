@@ -86,7 +86,7 @@ class MyApp extends StatelessWidget {
             );
           }
           if (settings.name == NewEditProjectScreen.routeNameEdit) {
-            final projectToEdit = settings.arguments as Project?; 
+            final projectToEdit = settings.arguments as Project?;
             return MaterialPageRoute(
               builder: (context) {
                 return NewEditProjectScreen(projectToEdit: projectToEdit);

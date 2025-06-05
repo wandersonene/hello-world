@@ -37,26 +37,26 @@
       });
     }
   </script>
-  
+
   <!-- Add Google Platform Library for Sign In (needed for some web configurations) -->
   <!-- <script src="https://apis.google.com/js/platform.js" async defer></script> -->
   <!-- If you are using google_sign_in_web, this might not be strictly necessary as it handles it -->
   <!-- <meta name="google-signin-client_id" content="YOUR_WEB_CLIENT_ID.apps.googleusercontent.com"> -->
 
-  <meta http-equiv="Content-Security-Policy" 
+  <meta http-equiv="Content-Security-Policy"
         content="
-        default-src 'self'; 
-        script-src 'self' 
+        default-src 'self';
+        script-src 'self'
                    'wasm-unsafe-eval'  // Needed for Flutter Web in CanvasKit mode (default for desktop web)
-                   https://apis.google.com 
+                   https://apis.google.com
                    https://*.gstatic.com;
         style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; // Flutter might use inline styles
         img-src 'self' data: https://*.googleusercontent.com https://*.gstatic.com; // For user profile pics, Google icons
         font-src 'self' https://fonts.gstatic.com;
-        connect-src 'self' 
-                      https://accounts.google.com 
-                      https://*.googleapis.com 
-                      https://*.gstatic.com 
+        connect-src 'self'
+                      https://accounts.google.com
+                      https://*.googleapis.com
+                      https://*.gstatic.com
                       https://www.google-analytics.com;
         frame-src 'self' https://accounts.google.com; // For Google Sign-In iframe
         object-src 'none';

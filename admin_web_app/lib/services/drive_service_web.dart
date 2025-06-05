@@ -21,7 +21,7 @@ class DriveServiceWeb {
     }
     return _driveApi!;
   }
-  
+
   // Method to find a folder by name, optionally within a parent folder.
   Future<gdrive.File?> findFolder(String folderName, {String? parentFolderId}) async {
     String query = "mimeType='application/vnd.google-apps.folder' and trashed=false and name='$folderName'";
@@ -37,7 +37,7 @@ class DriveServiceWeb {
     try {
       final result = await driveApi.files.list(
         q: query,
-        $fields: "files(id, name, modifiedTime, webViewLink)", 
+        $fields: "files(id, name, modifiedTime, webViewLink)",
         // spaces: 'drive', // Search all of user's Drive if needed
       );
       if (result.files != null && result.files!.isNotEmpty) {
@@ -81,7 +81,7 @@ class DriveServiceWeb {
       throw Exception('Error listing report PDFs: $e');
     }
   }
-  
+
   // List files in a specific subfolder (e.g., "Fotos") within a project folder.
   Future<List<gdrive.File>> listPhotosInSubfolder(String projectFolderId, String subfolderName) async {
      // First, find the subfolder (e.g., "Fotos")
@@ -121,7 +121,7 @@ class DriveServiceWeb {
       throw Exception('Error getting file metadata: $e');
     }
   }
-  
+
   void dispose() {
     _authService.removeListener(_onAuthChanged);
   }

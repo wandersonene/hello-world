@@ -58,7 +58,7 @@ class _InspectionScreenState extends State<InspectionScreen> {
     // This might be called if the provider instance changes, good place to re-initialize listeners or controllers if needed
     // For this screen, primary loading is in initState and via Consumer updates.
   }
-  
+
   void _updateTextControllerWithCurrentItem() {
     final item = _inspectionProvider.currentChecklistItem;
     if (item != null) {
@@ -112,7 +112,7 @@ class _InspectionScreenState extends State<InspectionScreen> {
      if (notes != null) { // Allow saving notes independently
       updatedItem = updatedItem.copyWith(notes: notes, updatedAt: DateTime.now());
     }
-    
+
     // Only save if something actually changed or if explicitly saving (e.g. on text field blur/change)
     // For OK/Not Conform, they are explicit actions, so always save.
     // For text/number, save if isLeavingItem is true or if the value actually changed.
@@ -122,7 +122,7 @@ class _InspectionScreenState extends State<InspectionScreen> {
         await _inspectionProvider.updateChecklistItemResponse(updatedItem);
     }
   }
-  
+
   void _saveCurrentTextResponse() {
     final item = _inspectionProvider.currentChecklistItem;
     if (item == null) return;
@@ -134,7 +134,7 @@ class _InspectionScreenState extends State<InspectionScreen> {
       _saveResponse(numberResponse: val);
     }
   }
-  
+
   void _saveNotesResponse() {
      final item = _inspectionProvider.currentChecklistItem;
     if (item == null) return;
@@ -218,11 +218,11 @@ class _InspectionScreenState extends State<InspectionScreen> {
         return null;
       }
     }
-    
+
     if (permission == LocationPermission.deniedForever) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Permissão de localização negada permanentemente. Não é possível obter coordenadas.')));
       return null;
-    } 
+    }
     try {
       return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high, timeLimit: const Duration(seconds: 10));
     } catch (e) {
@@ -258,7 +258,7 @@ class _InspectionScreenState extends State<InspectionScreen> {
         );
         return;
     }
-    
+
     Position? position;
     if(locationGranted) {
         position = await _getCurrentLocation();
@@ -276,7 +276,7 @@ class _InspectionScreenState extends State<InspectionScreen> {
         final Directory appDir = await getApplicationDocumentsDirectory();
         final String projectPhotoDir = p.join(appDir.path, 'project_photos', widget.projectId.toString());
         await Directory(projectPhotoDir).create(recursive: true);
-        
+
         final String fileName = '${DateTime.now().millisecondsSinceEpoch}_${p.basename(pickedFile.path)}';
         final String savedImagePath = p.join(projectPhotoDir, fileName);
 
@@ -360,7 +360,7 @@ class _InspectionScreenState extends State<InspectionScreen> {
       }
       return;
     }
-    
+
     // Save any pending changes from text fields before completing
     _saveCurrentTextResponse();
     _saveNotesResponse();
@@ -432,7 +432,7 @@ class _InspectionScreenState extends State<InspectionScreen> {
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(fontStyle: FontStyle.italic),
                       ),
                     ),
-                  
+
                   // Main content card for item description and response
                   Card(
                     elevation: 2,
@@ -463,7 +463,7 @@ class _InspectionScreenState extends State<InspectionScreen> {
 
                   // Photo Section
                   _buildPhotoSection(item),
-                  
+
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _notesEditingController,
@@ -603,7 +603,7 @@ class _InspectionScreenState extends State<InspectionScreen> {
       ),
     ));
   }
-  
+
   void _showPhotoSourceDialog(BuildContext context) {
     showModalBottomSheet(
       context: context,

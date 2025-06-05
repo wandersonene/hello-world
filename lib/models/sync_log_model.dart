@@ -90,8 +90,8 @@ class SyncStatus {
   static const String success = 'Success';
   static const String error = 'Error';
   static const String inProgress = 'In Progress';
-  static const String conflict = 'Conflict'; 
-  static const String neverSynced = 'Never Synced'; 
+  static const String conflict = 'Conflict';
+  static const String neverSynced = 'Never Synced';
   static const String userCancelled = 'User Cancelled';
   final String? driveReportWebViewLink; // Link to the report PDF on Google Drive
 
@@ -105,7 +105,7 @@ class SyncStatus {
     this.bytesTransferred,
     this.totalBytes,
     this.currentOperation,
-    this.driveReportWebViewLink, 
+    this.driveReportWebViewLink,
   });
 
   @override
@@ -118,7 +118,7 @@ class SyncStatus {
         bytesTransferred,
         totalBytes,
         currentOperation,
-        driveReportWebViewLink, 
+        driveReportWebViewLink,
       ];
 
   factory SyncLog.fromMap(Map<String, dynamic> map) {
@@ -131,7 +131,7 @@ class SyncStatus {
       bytesTransferred: map['bytes_transferred'] as int?,
       totalBytes: map['total_bytes'] as int?,
       currentOperation: map['current_operation'] as String?,
-      driveReportWebViewLink: map['drive_report_web_view_link'] as String?, 
+      driveReportWebViewLink: map['drive_report_web_view_link'] as String?,
     );
   }
 
@@ -145,7 +145,7 @@ class SyncStatus {
       'bytes_transferred': bytesTransferred,
       'total_bytes': totalBytes,
       'current_operation': currentOperation,
-      'drive_report_web_view_link': driveReportWebViewLink, 
+      'drive_report_web_view_link': driveReportWebViewLink,
     };
   }
 
@@ -158,12 +158,12 @@ class SyncStatus {
     int? bytesTransferred,
     int? totalBytes,
     String? currentOperation,
-    String? driveReportWebViewLink, 
+    String? driveReportWebViewLink,
     bool setMessageNull = false,
     bool setBytesTransferredNull = false,
     bool setTotalBytesNull = false,
     bool setCurrentOperationNull = false,
-    bool setDriveReportWebViewLinkNull = false, 
+    bool setDriveReportWebViewLinkNull = false,
   }) {
     return SyncLog(
       id: id ?? this.id,
@@ -174,7 +174,7 @@ class SyncStatus {
       bytesTransferred: setBytesTransferredNull ? null : (bytesTransferred ?? this.bytesTransferred),
       totalBytes: setTotalBytesNull ? null : (totalBytes ?? this.totalBytes),
       currentOperation: setCurrentOperationNull ? null : (currentOperation ?? this.currentOperation),
-      driveReportWebViewLink: setDriveReportWebViewLinkNull ? null : (driveReportWebViewLink ?? this.driveReportWebViewLink), 
+      driveReportWebViewLink: setDriveReportWebViewLinkNull ? null : (driveReportWebViewLink ?? this.driveReportWebViewLink),
     );
   }
 }
@@ -183,8 +183,8 @@ class SyncStatus {
   static const String success = 'Success';
   static const String error = 'Error';
   static const String inProgress = 'In Progress';
-  static const String conflict = 'Conflict'; 
-  static const String neverSynced = 'Never Synced'; 
+  static const String conflict = 'Conflict';
+  static const String neverSynced = 'Never Synced';
   static const String userCancelled = 'User Cancelled';
   final String? driveReportWebViewLink; // Link to the report PDF on Google Drive
 
@@ -198,7 +198,7 @@ class SyncStatus {
     this.bytesTransferred,
     this.totalBytes,
     this.currentOperation,
-    this.driveReportWebViewLink, 
+    this.driveReportWebViewLink,
   });
 
   @override
@@ -211,7 +211,7 @@ class SyncStatus {
         bytesTransferred,
         totalBytes,
         currentOperation,
-        driveReportWebViewLink, 
+        driveReportWebViewLink,
       ];
 
   factory SyncLog.fromMap(Map<String, dynamic> map) {
@@ -224,7 +224,7 @@ class SyncStatus {
       bytesTransferred: map['bytes_transferred'] as int?,
       totalBytes: map['total_bytes'] as int?,
       currentOperation: map['current_operation'] as String?,
-      driveReportWebViewLink: map['drive_report_web_view_link'] as String?, 
+      driveReportWebViewLink: map['drive_report_web_view_link'] as String?,
     );
   }
 
@@ -238,7 +238,7 @@ class SyncStatus {
       'bytes_transferred': bytesTransferred,
       'total_bytes': totalBytes,
       'current_operation': currentOperation,
-      'drive_report_web_view_link': driveReportWebViewLink, 
+      'drive_report_web_view_link': driveReportWebViewLink,
     };
   }
 
@@ -251,12 +251,12 @@ class SyncStatus {
     int? bytesTransferred,
     int? totalBytes,
     String? currentOperation,
-    String? driveReportWebViewLink, 
+    String? driveReportWebViewLink,
     bool setMessageNull = false,
     bool setBytesTransferredNull = false,
     bool setTotalBytesNull = false,
     bool setCurrentOperationNull = false,
-    bool setDriveReportWebViewLinkNull = false, 
+    bool setDriveReportWebViewLinkNull = false,
   }) {
     return SyncLog(
       id: id ?? this.id,
@@ -267,7 +267,7 @@ class SyncStatus {
       bytesTransferred: setBytesTransferredNull ? null : (bytesTransferred ?? this.bytesTransferred),
       totalBytes: setTotalBytesNull ? null : (totalBytes ?? this.totalBytes),
       currentOperation: setCurrentOperationNull ? null : (currentOperation ?? this.currentOperation),
-      driveReportWebViewLink: setDriveReportWebViewLinkNull ? null : (driveReportWebViewLink ?? this.driveReportWebViewLink), 
+      driveReportWebViewLink: setDriveReportWebViewLinkNull ? null : (driveReportWebViewLink ?? this.driveReportWebViewLink),
     );
   }
 }
@@ -276,8 +276,8 @@ class SyncStatus {
   static const String success = 'Success';
   static const String error = 'Error';
   static const String inProgress = 'In Progress';
-  static const String conflict = 'Conflict'; 
-  static const String neverSynced = 'Never Synced'; 
+  static const String conflict = 'Conflict';
+  static const String neverSynced = 'Never Synced';
   static const String userCancelled = 'User Cancelled';
   final String? driveReportWebViewLink; // Link to the report PDF on Google Drive
 
@@ -291,7 +291,7 @@ class SyncStatus {
     this.bytesTransferred,
     this.totalBytes,
     this.currentOperation,
-    this.driveReportWebViewLink, 
+    this.driveReportWebViewLink,
   });
 
   @override
@@ -304,7 +304,7 @@ class SyncStatus {
         bytesTransferred,
         totalBytes,
         currentOperation,
-        driveReportWebViewLink, 
+        driveReportWebViewLink,
       ];
 
   factory SyncLog.fromMap(Map<String, dynamic> map) {
@@ -317,7 +317,7 @@ class SyncStatus {
       bytesTransferred: map['bytes_transferred'] as int?,
       totalBytes: map['total_bytes'] as int?,
       currentOperation: map['current_operation'] as String?,
-      driveReportWebViewLink: map['drive_report_web_view_link'] as String?, 
+      driveReportWebViewLink: map['drive_report_web_view_link'] as String?,
     );
   }
 
@@ -331,7 +331,7 @@ class SyncStatus {
       'bytes_transferred': bytesTransferred,
       'total_bytes': totalBytes,
       'current_operation': currentOperation,
-      'drive_report_web_view_link': driveReportWebViewLink, 
+      'drive_report_web_view_link': driveReportWebViewLink,
     };
   }
 
@@ -344,12 +344,12 @@ class SyncStatus {
     int? bytesTransferred,
     int? totalBytes,
     String? currentOperation,
-    String? driveReportWebViewLink, 
+    String? driveReportWebViewLink,
     bool setMessageNull = false,
     bool setBytesTransferredNull = false,
     bool setTotalBytesNull = false,
     bool setCurrentOperationNull = false,
-    bool setDriveReportWebViewLinkNull = false, 
+    bool setDriveReportWebViewLinkNull = false,
   }) {
     return SyncLog(
       id: id ?? this.id,
@@ -360,7 +360,7 @@ class SyncStatus {
       bytesTransferred: setBytesTransferredNull ? null : (bytesTransferred ?? this.bytesTransferred),
       totalBytes: setTotalBytesNull ? null : (totalBytes ?? this.totalBytes),
       currentOperation: setCurrentOperationNull ? null : (currentOperation ?? this.currentOperation),
-      driveReportWebViewLink: setDriveReportWebViewLinkNull ? null : (driveReportWebViewLink ?? this.driveReportWebViewLink), 
+      driveReportWebViewLink: setDriveReportWebViewLinkNull ? null : (driveReportWebViewLink ?? this.driveReportWebViewLink),
     );
   }
 }
@@ -369,7 +369,7 @@ class SyncStatus {
   static const String success = 'Success';
   static const String error = 'Error';
   static const String inProgress = 'In Progress';
-  static const String conflict = 'Conflict'; 
-  static const String neverSynced = 'Never Synced'; 
+  static const String conflict = 'Conflict';
+  static const String neverSynced = 'Never Synced';
   static const String userCancelled = 'User Cancelled';
 }

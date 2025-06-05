@@ -9,7 +9,7 @@ final GetIt slWeb = GetIt.instance;
 void setupServiceLocatorWeb() {
   // Services
   slWeb.registerLazySingleton<GoogleAuthServiceWeb>(() => GoogleAuthServiceWeb());
-  
+
   // Providers can also be registered if not using Provider package at root,
   // but for this setup, AdminProvider is created by MultiProvider in main.dart.
   // slWeb.registerLazySingleton<AdminProvider>(() => AdminProvider(slWeb<GoogleAuthServiceWeb>()));

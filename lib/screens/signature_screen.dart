@@ -76,11 +76,11 @@ class _SignatureScreenState extends State<SignatureScreen> {
       final Directory appDocDir = await getApplicationDocumentsDirectory();
       final String signaturesDir = p.join(appDocDir.path, 'project_signatures');
       await Directory(signaturesDir).create(recursive: true);
-      
+
       // Using project ID in filename to make it specific, overwrites old one for this project
       final String fileName = 'signature_project_${widget.projectId}.png';
       final String filePath = p.join(signaturesDir, fileName);
-      
+
       final File file = File(filePath);
       await file.writeAsBytes(data);
       return filePath;

@@ -13,7 +13,7 @@ dependencies:
     sdk: flutter
   flutter_localizations: # Added for i18n
     sdk: flutter         # Added for i18n
-  
+
   # For UI and general utilities
   cupertino_icons: ^1.0.2
   provider: ^6.1.1
@@ -21,7 +21,7 @@ dependencies:
   intl: ^0.18.1 # For date formatting, 0.19.0 has Flutter 3.19 constraint
 
   # Google Sign-In and Drive API
-  google_sign_in: ^6.2.1 
+  google_sign_in: ^6.2.1
   # For web, google_sign_in_web is brought in automatically by google_sign_in
   # google_sign_in_web: # No need to specify explicitly usually
   googleapis: ^13.1.0 # Includes drive v3

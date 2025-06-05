@@ -34,7 +34,7 @@ class ReportService {
       // creator: 'Field Engineer App', // Will be set in XMP
       // keywords: 'comissionamento, relatório, ${project.projectType ?? ''}', // Will be set in XMP
     );
-    
+
     // Load TTF fonts - these must be valid TTF files in assets/fonts/
     pw.Font notoRegular;
     pw.Font notoBold;
@@ -55,7 +55,7 @@ class ReportService {
       bold: notoBold,
       // icons: await PdfGoogleFonts.materialIcons(), // PDF/A typically disallows some icon fonts if not embedded properly
     );
-    
+
     // PDF/A XMP Metadata
     pdf.document.catalog.xmpMetadata = pw.XmpMetadata(
       creatorTool: 'Field Engineer App v1.0.0',
@@ -111,7 +111,7 @@ class ReportService {
     // final ttf = pw.Font.ttf(fontData);
     // final boldFontData = await rootBundle.load("assets/fonts/OpenSans-Bold.ttf");
     // final boldTtf = pw.Font.ttf(boldFontData);
-    
+
     // Using default font (Helvetica) as it's built-in and avoids asset issues for now.
     pdf.addPage(
       pw.MultiPage(
@@ -130,7 +130,7 @@ class ReportService {
         ],
       ),
     );
-    
+
     // Subsequent content: Inspection Details
     // Pre-fetch all checklist items and their photos
     Map<int, List<ChecklistItem>> moduleChecklistItems = {};
@@ -162,11 +162,11 @@ class ReportService {
         itemImageProviders[item.id!] = currentItemImageProviders;
       }
     }
-    
+
     for (final module in modules) {
       if (module.id == null) continue;
       final itemsForCurrentModule = moduleChecklistItems[module.id!] ?? [];
-      
+
       pdf.addPage(
         pw.MultiPage(
           theme: theme,
@@ -217,11 +217,11 @@ class ReportService {
     final Directory appDocDir = await getApplicationDocumentsDirectory();
     final String reportDir = '${appDocDir.path}/project_reports/${project.id}';
     await Directory(reportDir).create(recursive: true);
-    
+
     final String safeProjectTitle = project.title.replaceAll(RegExp(r'[^\w\s-]'), '_').replaceAll(' ', '_');
     final String fileName = 'Relatorio_${safeProjectTitle}_${DateTime.now().toIso8601String().split('T').first}.pdf';
     final String filePath = '$reportDir/$fileName';
-    
+
     final File file = File(filePath);
     await file.writeAsBytes(await pdf.save());
 
@@ -239,7 +239,7 @@ class ReportService {
       child: pw.Text(title, style: pw.TextStyle(font: theme.bold, fontSize: 16)),
     );
   }
-  
+
   pw.Widget _buildFooter(pw.Context context) { // Theme is implicitly available via context
     return pw.Container(
       alignment: pw.Alignment.centerRight,
@@ -292,7 +292,7 @@ class ReportService {
   }
 
   pw.Widget _buildModuleDetailSection(
-    InspectionModule module, 
+    InspectionModule module,
     List<ChecklistItem> items,
     Map<int, List<pw.ImageProvider?>> itemImageProviders, // Changed name
     Map<int, List<Photo>> itemPhotoObjects, // Added to pass Photo objects for captions
@@ -303,7 +303,7 @@ class ReportService {
       children: [
         _buildInfoRow('Status do Módulo:', module.status, theme),
         pw.SizedBox(height: 10),
-        if (items.isEmpty) 
+        if (items.isEmpty)
             pw.Text('Nenhum item de checklist para este módulo.', style: pw.TextStyle(font: theme.base, fontStyle: pw.FontStyle.italic))
         else
             ...items.map((item) {
@@ -314,9 +314,9 @@ class ReportService {
       ],
     );
   }
-  
+
   List<pw.Widget> _buildChecklistItemDetail(
-    ChecklistItem item, 
+    ChecklistItem item,
     List<pw.ImageProvider?>? imageProviders, // Changed name
     List<Photo>? photoObjects, // Added
     pw.ThemeData theme,
@@ -336,7 +336,7 @@ class ReportService {
     if (imageProviders != null && imageProviders.isNotEmpty) {
       widgets.add(pw.Text('Fotos:', style: pw.TextStyle(font: theme.bold, fontSize: 11)));
       widgets.add(pw.SizedBox(height: 4));
-      
+
       List<pw.Widget> photoWidgets = [];
       for (int i = 0; i < imageProviders.length; i++) {
         final imgProvider = imageProviders[i];
@@ -355,7 +355,7 @@ class ReportService {
                   child: pw.Image(imgProvider, fit: pw.BoxFit.contain),
                   decoration: pw.Border.all(color: PdfColors.grey300, width: 0.5),
                 ),
-                if (photoCaption != null) 
+                if (photoCaption != null)
                   pw.Container(
                     width: 120,
                     padding: const pw.EdgeInsets.only(top: 2),
@@ -380,9 +380,9 @@ class ReportService {
     } else {
        widgets.add(pw.Text('Fotos: Nenhuma foto para este item.', style: pw.TextStyle(font: theme.base, fontStyle: pw.FontStyle.italic, color: PdfColors.grey)));
     }
-    
+
     widgets.add(pw.Divider(height: 10, thickness: 0.5, color: PdfColors.grey400));
-    
+
     return widgets;
   }
 
@@ -398,12 +398,12 @@ class ReportService {
       case ChecklistItemType.number:
         return item.responseNumber?.toString() ?? 'Não respondido';
       case ChecklistItemType.photoReference:
-        return 'Ver fotos associadas'; 
+        return 'Ver fotos associadas';
       default:
         return 'Tipo de item desconhecido';
     }
   }
-  
+
   pw.Widget _buildInfoRow(String label, String value, pw.ThemeData theme) {
     return pw.Padding(
       padding: const pw.EdgeInsets.symmetric(vertical: 2.0),
@@ -444,7 +444,7 @@ class ReportService {
 //     final fontData = await rootBundle.load("assets/fonts/OpenSans-Bold.ttf");
 //     return pw.Font.ttf(fontData);
 //   }
-  
+
 //   static Future<pw.Font> materialIcons() async {
 //     // This is a placeholder. The material icons font isn't typically used directly for text.
 //     // If you need icons, you might use specific icon fonts or SVG.

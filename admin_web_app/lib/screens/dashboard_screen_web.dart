@@ -45,7 +45,7 @@ class _DashboardScreenWebState extends State<DashboardScreenWeb> {
     if (!authService.isSignedIn) {
       // This should ideally be handled by the router in main.dart,
       // but as a fallback:
-      return const LoginScreenWeb(); 
+      return const LoginScreenWeb();
     }
 
     return Scaffold(
@@ -161,7 +161,7 @@ class _DashboardScreenWebState extends State<DashboardScreenWeb> {
                   )
                 else
                   const Text('Relatório PDF principal não encontrado ou link indisponível.', style: TextStyle(fontStyle: FontStyle.italic)),
-                
+
                 if (project.photoCount > 0) ...[
                   const SizedBox(height: 8),
                   Text('Fotos Sincronizadas: ${project.photoCount}', style: Theme.of(context).textTheme.bodyMedium),

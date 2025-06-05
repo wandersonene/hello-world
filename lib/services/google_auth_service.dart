@@ -70,7 +70,7 @@ class GoogleAuthService with ChangeNotifier {
       // 'X-Goog-AuthUser': '0', // Optional, for specific use cases
     };
   }
-  
+
   Future<GoogleSignInAccount?> signInSilently() async {
     try {
       final GoogleSignInAccount? account = await _googleSignIn.signInSilently();

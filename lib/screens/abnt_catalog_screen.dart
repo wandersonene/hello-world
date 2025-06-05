@@ -86,7 +86,7 @@ class _AbntCatalogScreenState extends State<AbntCatalogScreen> {
                 useOnLoadResource: true,
                 cacheEnabled: true,
                 // Allow mixed content for broader compatibility, though ABNT should be HTTPS
-                // mixedContentMode: MixedContentMode.MIXED_CONTENT_ALWAYS_ALLOW, 
+                // mixedContentMode: MixedContentMode.MIXED_CONTENT_ALWAYS_ALLOW,
               ),
               pullToRefreshController: _pullToRefreshController,
               onWebViewCreated: (controller) {

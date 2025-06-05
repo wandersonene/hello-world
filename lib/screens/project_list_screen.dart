@@ -7,8 +7,8 @@ import '../models/project_model.dart';
 import '../models/sync_log_model.dart';
 import '../services/google_auth_service.dart';
 import '../services/drive_service.dart';
-import '../services/report_service.dart'; 
-import '../services/database_service.dart'; 
+import '../services/report_service.dart';
+import '../services/database_service.dart';
 import '../service_locator.dart';
 import 'new_edit_project_screen.dart';
 import 'login_screen.dart';
@@ -29,7 +29,7 @@ class ProjectListScreen extends StatefulWidget {
 class _ProjectListScreenState extends State<ProjectListScreen> {
   Map<int, SyncLog?> _syncLogs = {};
   bool _isLoadingSyncLogs = false;
-  int? _currentlySyncingProjectId; 
+  int? _currentlySyncingProjectId;
 
   @override
   void initState() {
@@ -49,7 +49,7 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
   void _onAuthChanged() {
     _loadSyncLogs();
   }
-  
+
   void _onProjectsChanged() {
      WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
@@ -76,7 +76,7 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
       });
     }
   }
-  
+
   void _updateSyncLogState(int projectId, String status, String message, {int? bytesTransferred, int? totalBytes, String? currentOperation, String? driveReportWebViewLink}) {
     final existingLog = _syncLogs[projectId];
     DateTime timestamp = DateTime.now();
@@ -86,9 +86,9 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
     if (status == SyncStatus.inProgress && existingLog?.status == SyncStatus.inProgress) {
       timestamp = existingLog?.lastSyncTimestamp ?? DateTime.now();
     }
-    
+
     final newLog = SyncLog(
-      id: existingLog?.id, 
+      id: existingLog?.id,
       projectId: projectId,
       lastSyncTimestamp: timestamp,
       status: status,
@@ -98,7 +98,7 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
       currentOperation: currentOperation ?? (status == SyncStatus.inProgress ? existingLog?.currentOperation : null),
       driveReportWebViewLink: finalDriveLink,
     );
-    
+
     sl<DatabaseService>().addOrUpdateSyncLog(newLog);
     if(mounted) {
       setState(() {
@@ -110,7 +110,7 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
   Future<bool?> _showConflictDialog(BuildContext context, String fileName) async {
     return showDialog<bool>(
       context: context,
-      barrierDismissible: false, 
+      barrierDismissible: false,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: const Text('Conflito de Arquivo'),
@@ -151,7 +151,7 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
       final driveService = DriveService(authService.currentUser!);
       final dbService = sl<DatabaseService>();
       final reportService = ReportService();
-      Project? latestProjectData = await dbService.getProject(project.id!); 
+      Project? latestProjectData = await dbService.getProject(project.id!);
       if (latestProjectData == null) throw Exception("Projeto não encontrado localmente.");
 
       const String appFolderName = "AplicativoDeComissionamento";
@@ -161,19 +161,19 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
       final String projectFolderName = project.title.replaceAll(RegExp(r'[^\w\s-]'), '_').replaceAll(' ', '_');
       _updateSyncLogState(project.id!, SyncStatus.inProgress, "Verificando pasta do projeto...", currentOperation: "Pastas (2/3)", driveReportWebViewLink: currentDriveReportLink);
       String projectFolderId = await driveService.createFolderIfNotExists(projectFolderName, parentFolderId: appFolderId);
-      
+
       _updateSyncLogState(project.id!, SyncStatus.inProgress, "Gerando relatório PDF...", currentOperation: "Relatório (1/2)", driveReportWebViewLink: currentDriveReportLink);
       final Directory appDocDir = await getApplicationDocumentsDirectory();
       final String signaturesDir = p.join(appDocDir.path, 'project_signatures');
       final String signatureFileName = 'signature_project_${project.id}.png';
       final String signatureFilePath = p.join(signaturesDir, signatureFileName);
       String? currentSignaturePath = await File(signatureFilePath).exists() ? signatureFilePath : null;
-      
+
       String? reportPath = await reportService.generateProjectReport(project.id!, signatureImagePath: currentSignaturePath);
       if (reportPath == null) throw Exception("Falha ao gerar o relatório PDF.");
       File reportFile = File(reportPath);
       if (!await reportFile.exists()) throw Exception("Arquivo PDF do relatório não encontrado em $reportPath");
-      
+
       final reportFileName = reportFile.path.split('/').last;
       _updateSyncLogState(project.id!, SyncStatus.inProgress, "Verificando PDF no Drive...", currentOperation: "Relatório (2/2)", driveReportWebViewLink: currentDriveReportLink);
       gdrive.File? existingPdfDriveFile = await driveService.findFileByNameAndGetMetadata(reportFileName, projectFolderId);
@@ -181,7 +181,7 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
 
       if (existingPdfDriveFile?.id != null && existingPdfDriveFile?.modifiedTime != null) {
         final driveModifiedTime = existingPdfDriveFile!.modifiedTime!;
-        final localProjectUpdatedAt = latestProjectData.updatedAt; 
+        final localProjectUpdatedAt = latestProjectData.updatedAt;
 
         if (driveModifiedTime.isAfter(localProjectUpdatedAt)) {
           _updateSyncLogState(project.id!, SyncStatus.conflict, "Conflito detectado para o PDF. Aguardando usuário.", currentOperation: "Conflito: PDF", driveReportWebViewLink: existingPdfDriveFile.webViewLink);
@@ -192,17 +192,17 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
           }
         }
       }
-      
+
       if (allowOverwritePdf) {
         _updateSyncLogState(project.id!, SyncStatus.inProgress, "Enviando PDF...", currentOperation: "Enviando PDF: $reportFileName", driveReportWebViewLink: currentDriveReportLink);
         gdrive.File uploadedPdfFile = await driveService.uploadFile(reportFile, projectFolderId, existingFileId: existingPdfDriveFile?.id);
-        currentDriveReportLink = uploadedPdfFile.webViewLink; 
+        currentDriveReportLink = uploadedPdfFile.webViewLink;
       }
 
       _updateSyncLogState(project.id!, SyncStatus.inProgress, "Preparando fotos...", currentOperation: "Pastas (3/3)", driveReportWebViewLink: currentDriveReportLink);
       final String photosFolderName = "Fotos";
       String photosDriveFolderId = await driveService.createFolderIfNotExists(photosFolderName, parentFolderId: projectFolderId);
-      
+
       List<Photo> projectPhotos = await dbService.getPhotosForProject(project.id!); // Get all photos for the project
 
       int totalPhotos = projectPhotos.length;
@@ -210,7 +210,7 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
       for (int i = 0; i < totalPhotos; i++) {
         final photo = projectPhotos[i];
         _updateSyncLogState(project.id!, SyncStatus.inProgress, "Enviando fotos...", currentOperation: "Foto ${i+1} de $totalPhotos: ${photo.filePath.split('/').last}", totalBytes: totalPhotos, bytesTransferred: i + 1, driveReportWebViewLink: currentDriveReportLink);
-        
+
         File photoFile = File(photo.filePath);
         if (await photoFile.exists()) {
           final photoFileName = photoFile.path.split('/').last;
@@ -226,7 +226,7 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
 
     } catch (e) {
       print("Sync error for project ${project.id}: $e");
-      _updateSyncLogState(project.id!, SyncStatus.error, e.toString(), currentOperation: "Falha na sincronização", driveReportWebViewLink: currentDriveReportLink); 
+      _updateSyncLogState(project.id!, SyncStatus.error, e.toString(), currentOperation: "Falha na sincronização", driveReportWebViewLink: currentDriveReportLink);
        if(mounted) ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Erro ao sincronizar "${project.title}": $e'), backgroundColor: Colors.red),
       );
@@ -255,7 +255,7 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
             child: ConnectivityIndicator(), // Added ConnectivityIndicator
           ),
           IconButton(
-            icon: const Icon(Icons.menu_book_outlined), 
+            icon: const Icon(Icons.menu_book_outlined),
             tooltip: 'Catálogo ABNT',
             onPressed: () {
               Navigator.of(context).pushNamed(AbntCatalogScreen.routeName);
@@ -381,8 +381,8 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
                                                 Text(
                                                   'Status Sinc.: ${syncLog?.status ?? SyncStatus.neverSynced}',
                                                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                                    color: syncLog?.status == SyncStatus.error ? Colors.redAccent 
-                                                           : (syncLog?.status == SyncStatus.success ? Colors.green 
+                                                    color: syncLog?.status == SyncStatus.error ? Colors.redAccent
+                                                           : (syncLog?.status == SyncStatus.success ? Colors.green
                                                            : (syncLog?.status == SyncStatus.inProgress || isProjectCurrentlySyncing ? Theme.of(context).primaryColor : Colors.grey)),
                                                     fontWeight: (syncLog?.status == SyncStatus.inProgress || isProjectCurrentlySyncing) ? FontWeight.bold : FontWeight.normal,
                                                   ),

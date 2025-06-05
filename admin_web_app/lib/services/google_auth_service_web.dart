@@ -18,7 +18,7 @@ class WebAuthenticatedHttpClient extends http.BaseClient {
     }
     // Important for web: tells Google which user is making the request if multiple are logged in browser.
     // It might not always be '0'. Handled by google_sign_in usually.
-    // request.headers['X-Goog-AuthUser'] = '0'; 
+    // request.headers['X-Goog-AuthUser'] = '0';
     return _client.send(request);
   }
    @override
