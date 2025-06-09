@@ -1,0 +1,29 @@
+{
+  "@@locale": "en",
+  "adminLoginTitle": "Admin Login - Field Engineer App",
+  "@adminLoginTitle": {
+    "description": "Login page title for the admin web app"
+  },
+  "adminLoginButtonGoogle": "Login with Google",
+  "adminDashboardTitle": "Admin Dashboard - Projects on Drive",
+  "adminDashboardLogout": "Logout",
+  "adminDashboardProjectNameHeader": "Project Name",
+  "adminDashboardLastModifiedHeader": "Last Modified (Drive)",
+  "adminDashboardReportLinkHeader": "Report",
+  "adminDashboardPhotoCountHeader": "Photo Count",
+  "adminDashboardEmptyState": "No projects found in 'AplicativoDeComissionamento' folder on Google Drive.",
+  "adminDashboardErrorLoading": "Error loading projects: {errorMessage}",
+  "@adminDashboardErrorLoading": {
+    "placeholders": {
+      "errorMessage": {
+        "type": "String"
+      }
+    }
+  },
+  "adminDashboardTryAgainButton": "Try Again",
+  "adminDashboardOpenReportButton": "Open Report",
+  "commonError": "Error",
+  "commonSuccess": "Success",
+  "commonOk": "OK",
+  "commonCancel": "Cancel"
+}

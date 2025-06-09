@@ -1,0 +1,73 @@
+name: field_engineer_app
+description: A new Flutter project for field engineers.
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0' # Adjusted based on typical modern Flutter setup
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.2
+  sqflite: ^2.3.0 # Check for latest version
+  path_provider: ^2.1.1 # Check for latest version
+  crypt: ^4.2.1 # Check for latest version, provides PBKDF2
+  equatable: ^2.0.5 # Check for latest version
+  get_it: ^7.6.4 # Check for latest version
+  provider: ^6.1.1 # Check for latest version
+  email_validator: ^2.1.17 # For email validation
+
+  # New dependencies for photo and permissions
+  image_picker: ^1.0.7 # Check for latest
+  path: ^1.8.3 # Already implicitly used by path_provider, but good to have explicitly for path.join
+  geolocator: ^11.0.0 # Check for latest
+  permission_handler: ^11.3.0 # Check for latest
+  photo_view: ^0.14.0 # Check for latest (or ^0.15.0)
+
+  # PDF Generation and File Opening
+  pdf: ^3.10.8 # Check for latest
+  open_file_plus: ^3.4.1 # Check for latest (maintained fork of open_file)
+  # printing: ^5.11.1 # Alternative/complementary for PDF, can use for sharing/printing later
+
+  # Google Sign-In and Drive API
+  google_sign_in: ^6.2.1 # Check for latest
+  googleapis: ^13.1.0 # Check for latest (includes drive v3)
+  # googleapis_auth: ^1.4.1 # Often used with googleapis, but google_sign_in provides an authenticated client
+
+  # Digital Signature
+  signature: ^5.4.1 # Check for latest for touch-based signatures
+
+  # WebView
+  flutter_inappwebview: ^5.8.0 # Check for latest, using 5.x as 6.x has breaking changes
+
+  # Email and Sharing
+  flutter_email_sender: ^6.0.3 # Check for latest
+  share_plus: ^7.2.2 # Check for latest
+
+  # QR Code
+  qr_flutter: ^4.1.0 # Check for latest
+  image_gallery_saver: ^2.0.3 # Check for latest
+
+  # Secure Storage and DB Encryption
+  flutter_secure_storage: ^9.0.0 # Check for latest
+  sqflite_sqlcipher: ^2.1.0 # Check for latest that's compatible with sqflite 2.3.x. May need to adjust sqflite version.
+  # Note: sqflite_sqlcipher might have its own sqlite3 bindings or require specific setup.
+
+  # Connectivity
+  connectivity_plus: ^5.0.2 # Check for latest
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0 # Or ^3.0.0
+
+flutter:
+  uses-material-design: true
+  generate: true # Ensure this is true for intl code generation
+
+  assets:
+    - assets/fonts/
